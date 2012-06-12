@@ -1,0 +1,205 @@
+<gerwinml>
+
+  <project name="Project0" file="/home/dantoac/test.ger" author="Anonymous GNUdist">
+
+    <tables>
+
+
+      <table name="entidad_1">
+
+        <table_attributes>
+
+          <table_attribute name="nombre" domain="string-length=12"/>
+          <table_attribute name="id" domain="integer"/>
+
+        </table_attributes>
+
+
+        <table_restrictions>
+
+          <primary_key>
+            <primary_key_attributes>
+
+              <primary_key_attribute name="id"/>
+
+            </primary_key_attributes>
+          </primary_key>
+
+          <not_nulleable>
+            <not_nulleable_attributes>
+
+              <not_nulleable_attribute name="id"/>
+
+            </not_nulleable_attributes>
+
+          </not_nulleable>
+
+          <foreign_keys>
+
+
+          </foreign_keys>
+
+        </table_restrictions>
+
+      </table>
+
+
+
+      <table name="entity2">
+
+        <table_attributes>
+
+          <table_attribute name="id" domain="integer"/>
+          <table_attribute name="entidad_1_id" domain="integer"/>
+          <table_attribute name="entity3_id" domain="int"/>
+
+        </table_attributes>
+
+
+        <table_restrictions>
+
+          <primary_key>
+            <primary_key_attributes>
+
+              <primary_key_attribute name="id"/>
+
+            </primary_key_attributes>
+          </primary_key>
+
+          <not_nulleable>
+            <not_nulleable_attributes>
+
+              <not_nulleable_attribute name="id"/>
+              <not_nulleable_attribute name="entidad_1_id"/>
+              <not_nulleable_attribute name="entity3_id"/>
+
+            </not_nulleable_attributes>
+
+          </not_nulleable>
+
+          <foreign_keys>
+
+            <foreign_key reference_table="entidad_1">
+
+              <foreign_key_attributes>
+
+                <foreign_key_attribute name="entidad_1_id" rattribute="id"/>
+
+              </foreign_key_attributes>
+
+            </foreign_key>
+
+            <foreign_key reference_table="entity3">
+
+              <foreign_key_attributes>
+
+                <foreign_key_attribute name="entity3_id" rattribute="id"/>
+
+              </foreign_key_attributes>
+
+            </foreign_key>
+
+
+          </foreign_keys>
+
+        </table_restrictions>
+
+      </table>
+
+
+
+      <table name="entity3">
+
+        <table_attributes>
+
+          <table_attribute name="id" domain="int"/>
+
+        </table_attributes>
+
+
+        <table_restrictions>
+
+          <primary_key>
+            <primary_key_attributes>
+
+              <primary_key_attribute name="id"/>
+
+            </primary_key_attributes>
+          </primary_key>
+
+          <not_nulleable>
+            <not_nulleable_attributes>
+
+              <not_nulleable_attribute name="id"/>
+
+            </not_nulleable_attributes>
+
+          </not_nulleable>
+
+          <foreign_keys>
+
+
+          </foreign_keys>
+
+        </table_restrictions>
+
+      </table>
+
+
+
+      <table name="entity4">
+
+        <table_attributes>
+
+          <table_attribute name="id" domain="int"/>
+          <table_attribute name="entity2_id" domain="integer"/>
+
+        </table_attributes>
+
+
+        <table_restrictions>
+
+          <primary_key>
+            <primary_key_attributes>
+
+              <primary_key_attribute name="id"/>
+
+            </primary_key_attributes>
+          </primary_key>
+
+          <not_nulleable>
+            <not_nulleable_attributes>
+
+              <not_nulleable_attribute name="id"/>
+              <not_nulleable_attribute name="entity2_id"/>
+
+            </not_nulleable_attributes>
+
+          </not_nulleable>
+
+          <foreign_keys>
+
+            <foreign_key reference_table="entity2">
+
+              <foreign_key_attributes>
+
+                <foreign_key_attribute name="entity2_id" rattribute="id"/>
+
+              </foreign_key_attributes>
+
+            </foreign_key>
+
+
+          </foreign_keys>
+
+        </table_restrictions>
+
+      </table>
+
+    </tables>
+
+  </project>
+
+</gerwinml>
+
+

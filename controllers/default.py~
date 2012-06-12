@@ -1,0 +1,177 @@
+# -*- coding: utf-8 -*-
+# this file is released under public domain and you can use without limitations
+
+#########################################################################
+## This is a samples controller
+## - index is the default action of any application
+## - user is required for authentication and authorization
+## - download is for downloading files uploaded in the db (does streaming)
+## - call exposes all registered services (none by default)
+#########################################################################
+
+def ferret2dal():
+    '''
+    @author: Daniel Aguayo Catalán <dantoac@lavabit.com>
+    @desc: translate from gerwin.xml to dal syntax
+    @license: GNU/GPL version 3 or superior
+    
+    Use: 
+     - Place this function into a controller of any web2py application.
+     - Export your diagram using GerwinXML format inside the 
+    application/static folder.
+     - See results in application/models/ferret2dal.py
+
+    Notes:
+     - In ferret, if you use a 'signature' type for an attribute,
+    this script will transcript it as 'auth.signature'
+        
+    '''
+    
+    import urllib2
+    url = urllib2.urlopen(URL('static','gerwin.xml',host=True))
+    data = TAG(url.read())
+    
+    dalobj = 'db.define_table'
+    
+    # tables to ignore
+    ignore_tables = ['auth_user','auth_group','auth_membership']
+
+    parsed = []
+    
+    for i in data.elements('table'):
+        tn = i.attributes['_name']
+        
+        if tn in ignore_tables: continue
+        
+        parsed.append('\n\n%s("%s",' % (dalobj,tn))
+        
+        a = data.element('table[name=%s]' % tn)
+        
+        # get primary Key
+        for i in a.elements('primary_key_attribute'):
+            pk = i.attributes['_name']
+            
+        # get referenced table in foreign key
+        
+        fkt = []
+        for i in a.elements('foreign_key'):
+            fkt.append(i.attributes['_reference_table'])
+            
+        # get fieldname of the foreign key
+        fkn = []
+        for i in a.elements('foreign_key_attribute'):
+            fkn.append(i.attributes['_name'])
+        '''
+            
+        fk = dict()
+        
+        for x in a.elements('foreign_key'):
+            for y in a.elements('foreign_key_attribute'):
+                fk[y.attributes['_name']]=x.attributes['_reference_table']
+
+        '''                    
+        fn_name = False
+        # get all table attributes
+        for i in a.elements('table_attribute'):
+                        
+            fieldname = i.attributes['_name']
+            fieldtype = i.attributes['_domain']
+
+            # save a flag if there's a "name" attribute in Table
+            if fieldname == 'name':
+                fn_name = True
+                       
+            if pk == fieldname: continue
+
+            # replace domain syntax for foreign keys (references)
+           
+            if fieldname in fkn:
+                fieldtype = "reference %s" % fkt[fkn.index(fieldname)]
+            ''' 
+            if fieldname in fk:
+                fieldtype = "reference %s" % fk[fieldname]
+            '''     
+            if fieldname == 'auth' and fieldtype == 'signature':
+                parsed.append('\n    auth.signature,')
+            else:
+                parsed.append('\n    Field("%s", "%s"), ' % (fieldname,fieldtype))
+
+        # use the "name" field to format table references if exists, else use 'id' field
+        if fn_name:
+            parsed.append('\n    format="%(name)s"')
+        else:
+            parsed.append('\n    format="%(id)s"')
+        parsed.append('\n)')
+        
+    msg = "#CHECK TABLE ORDER FOR PROPERLY \n#REFERENCE FORMAT,ATTRIBUTES ARGUMENTS AND MORE\n"
+    with open('applications/ferret2dal/models/ferret2dal.py','w') as file:
+        file.write(msg)
+        for l in parsed:
+            file.write(l)
+    
+    parsed.insert(0,msg)
+    return CODE(parsed)
+    
+    
+             
+            
+def index():
+    """
+    example action using the internationalization operator T and flash
+    rendered by views/default/index.html or views/generic.html
+    """
+    response.flash = "Welcome to web2py!"
+    return dict(message=T('Hello World'))
+
+def user():
+    """
+    exposes:
+    http://..../[app]/default/user/login
+    http://..../[app]/default/user/logout
+    http://..../[app]/default/user/register
+    http://..../[app]/default/user/profile
+    http://..../[app]/default/user/retrieve_password
+    http://..../[app]/default/user/change_password
+    use @auth.requires_login()
+        @auth.requires_membership('group name')
+        @auth.requires_permission('read','table name',record_id)
+    to decorate functions that need access control
+    """
+    return dict(form=auth())
+
+
+def download():
+    """
+    allows downloading of uploaded files
+    http://..../[app]/default/download/[filename]
+    """
+    return response.download(request,db)
+
+
+def call():
+    """
+    exposes services. for example:
+    http://..../[app]/default/call/jsonrpc
+    decorate with @services.jsonrpc the functions to expose
+    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv
+    """
+    return service()
+
+
+@auth.requires_signature()
+def data():
+    """
+    http://..../[app]/default/data/tables
+    http://..../[app]/default/data/create/[table]
+    http://..../[app]/default/data/read/[table]/[id]
+    http://..../[app]/default/data/update/[table]/[id]
+    http://..../[app]/default/data/delete/[table]/[id]
+    http://..../[app]/default/data/select/[table]
+    http://..../[app]/default/data/search/[table]
+    but URLs must be signed, i.e. linked with
+      A('table',_href=URL('data/tables',user_signature=True))
+    or with the signed load operator
+      LOAD('default','data.load',args='tables',ajax=True,user_signature=True)
+    """
+    return dict(form=crud())
+

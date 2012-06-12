@@ -1,0 +1,88 @@
+
+
+db.define_table("workorder",
+    Field("detail", "text"), 
+    Field("total_neto", "double"), 
+    Field("total_iva", "double"), 
+    Field("extra", "text"), 
+    Field("obs", "text"), 
+    auth.signature,
+    Field("auth_id", "reference auth_user"), 
+    Field("state_id", "reference state"), 
+    Field("box_id", "reference box"), 
+    Field("brand_id", "reference brand"), 
+    Field("model_id", "reference model"), 
+)
+
+db.define_table("material",
+    Field("amount", "double"), 
+)
+
+db.define_table("service",
+    Field("price", "double"), 
+    Field("description", "text"), 
+    Field("service_code", "string"), 
+)
+
+db.define_table("state",
+    Field("name", "string"), 
+    format "%(name)s"
+)
+
+db.define_table("report",
+    format "%(name)s"
+)
+
+db.define_table("replacement",
+    Field("name", "string"), 
+    Field("price_buy", "double"), 
+    Field("price_sale", "double"), 
+    Field("price_market", "double"), 
+    Field("iva", "double"), 
+    Field("quantiy", "double"), 
+    Field("replacement_code", "string"), 
+    auth.signature,
+    Field("state_id", "reference state"), 
+)
+
+db.define_table("tool",
+    Field("state_id", "reference state"), 
+)
+
+db.define_table("box",
+)
+
+db.define_table("bill",
+    Field("payment_id", "reference payment"), 
+)
+
+db.define_table("invoice",
+    Field("payment_id", "reference payment"), 
+)
+
+db.define_table("brand",
+    Field("name", "string"), 
+    format "%(name)s"
+)
+
+db.define_table("model",
+    Field("name", "string"), 
+    format "%(name)s"
+)
+
+db.define_table("workorder_history",
+    format "%(name)s"
+)
+
+db.define_table("payment",
+    Field("order_id", "reference workorder"), 
+)
+
+db.define_table("material_service",
+    Field("service_id", "reference service"), 
+)
+
+db.define_table("workorder_service",
+    Field("order_id", "reference workorder"), 
+    Field("service_id", "reference service"), 
+)

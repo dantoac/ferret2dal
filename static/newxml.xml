@@ -1,0 +1,48 @@
+      <table name="payment">
+
+        <table_attributes>
+
+          <table_attribute name="payment_id" domain="integer"/>
+          <table_attribute name="order_id" domain="integer"/>
+
+        </table_attributes>
+
+
+        <table_restrictions>
+
+          <primary_key>
+            <primary_key_attributes>
+
+              <primary_key_attribute name="payment_id"/>
+
+            </primary_key_attributes>
+          </primary_key>
+
+          <not_nulleable>
+            <not_nulleable_attributes>
+
+              <not_nulleable_attribute name="payment_id"/>
+              <not_nulleable_attribute name="order_id"/>
+
+            </not_nulleable_attributes>
+
+          </not_nulleable>
+
+          <foreign_keys>
+
+            <foreign_key reference_table="workorder">
+
+              <foreign_key_attributes>
+
+                <foreign_key_attribute name="order_id" rattribute="order_id"/>
+
+              </foreign_key_attributes>
+
+            </foreign_key>
+
+
+          </foreign_keys>
+
+        </table_restrictions>
+
+      </table>
