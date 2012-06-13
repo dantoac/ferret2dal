@@ -36,7 +36,11 @@ def ferret2dal():
     # tables to ignore
     ignore_tables = ['auth_user','auth_group','auth_membership']
 
-    parsed = []
+    # field attributes to care about
+    DAL_field_attributes = ['length','required','requires',
+                            'writable','readable']
+
+    parsed = [] # all will be saved here
     
     for i in data.elements('table'):
         tn = i.attributes['_name']
@@ -47,7 +51,7 @@ def ferret2dal():
         
         a = data.element('table[name=%s]' % tn)
         
-        # get primary Key
+        # get Primary Key
         for i in a.elements('primary_key_attribute'):
             pk = i.attributes['_name']
             
@@ -60,40 +64,38 @@ def ferret2dal():
         fkn = []
         for i in a.elements('foreign_key_attribute'):
             fkn.append(i.attributes['_name'])
-        '''
-            
-        fk = dict()
-        
-        for x in a.elements('foreign_key'):
-            for y in a.elements('foreign_key_attribute'):
-                fk[y.attributes['_name']]=x.attributes['_reference_table']
 
-        '''                    
         fn_name = False
-        # get all table attributes
+
+        # get all attributes per Table
+        
+        field_attributes = None
+
         for i in a.elements('table_attribute'):
                         
             fieldname = i.attributes['_name']
             fieldtype = i.attributes['_domain']
 
             # save a flag if there's a "name" attribute in Table
+            # eg.: in ferret model says afield, name
             if fieldname == 'name':
                 fn_name = True
                        
             if pk == fieldname: continue
 
-            # replace domain syntax for foreign keys (references)
-           
+            # replace domain syntax for foreign keys (references)           
             if fieldname in fkn:
                 fieldtype = "reference %s" % fkt[fkn.index(fieldname)]
-            ''' 
-            if fieldname in fk:
-                fieldtype = "reference %s" % fk[fieldname]
-            '''     
+
             if fieldname == 'auth' and fieldtype == 'signature':
                 parsed.append('\n    auth.signature,')
-            else:
-                parsed.append('\n    Field("%s", "%s"), ' % (fieldname,fieldtype))
+                
+            for attribute in DAL_field_attributes:
+                if attribute in fieldtype:                    
+                    field_attributes = ','.join(fieldtype.split(',')[1:])
+            
+            # builds column data
+            parsed.append('\n    Field("%s", "%s", %s), ' % (fieldname,fieldtype.split(',')[0],field_attributes))
 
         # use the "name" field to format table references if exists, else use 'id' field
         if fn_name:
